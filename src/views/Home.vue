@@ -22,7 +22,7 @@
         </div>
       </div>
       <div>
-        <v-btn color="green">Thêm mới</v-btn>
+        <v-btn @click="showPopup = true" color="green">Thêm mới</v-btn>
       </div>
     </div>
     <div class="table-item">
@@ -194,8 +194,8 @@
         :total-visible="7"
       ></v-pagination>
     </div>
-    <v-dialog v-model="showPopup" width="1200px" height="1000px" scrollable="false">
-      <PopupDetail/>
+    <v-dialog v-model="showPopup" width="1200px" height="1000" scrollable="true">
+      <PopupDetail :closePopup="closePopup" />
     </v-dialog>
   </div>
 </template>
@@ -204,8 +204,11 @@
 import {ref, mergeProps} from "vue";
 import PopupDetail from "@/components/PopupDetail.vue";
 
-const page = ref(1)
-const showPopup = ref(false)
+const page = ref(1);
+const showPopup = ref(false);
+const closePopup = () => {
+  showPopup.value = false;
+}
 </script>
 <style>
 .table-item {

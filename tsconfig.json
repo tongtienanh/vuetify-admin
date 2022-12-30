@@ -15,7 +15,8 @@
     "lib": ["esnext", "dom"],
     "types": [
       "node",
-      "vuetify"
+      "vuetify",
+      "vue-sweetalert2"
     ],
     "paths": {
       "@/*": ["src/*"]

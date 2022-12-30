@@ -54,18 +54,60 @@
                     <v-select label="Tag" variant="underlined" multiple clearable></v-select>
                   </v-col>
                 </v-row>
+                <v-row>
+                  <v-col cols="12" md="12">
+                    <v-text-field
+                      label="Link Google"
+                      variant="underlined"
+                      clearable
+                      v-model="params.googleLink"
+                    >
+                    </v-text-field>
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col cols="12" md="12">
+                    <v-text-field
+                      label="Link Fshare"
+                      variant="underlined"
+                      clearable
+                      v-model="params.fShareLink"
+                    >
+                    </v-text-field>
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col cols="12" md="12">
+                    <v-textarea
+                      v-model="params.description"
+                      label="Description"
+                    >
+                    </v-textarea>
+                  </v-col>
+                </v-row>
               </v-col>
             </v-row>
           </v-container>
         </div>
       </div>
     </v-card-text>
+    <v-card-actions>
+      <div class="d-flex justify-space-between align-center w-100">
+        <div></div>
+        <div class="py-4 mr-5">
+          <v-btn @click="cancelAction" color="red">Hủy</v-btn>
+          <v-btn color="green">Xác nhận</v-btn>
+        </div>
+      </div>
+    </v-card-actions>
   </v-card>
 </template>
 
 <script setup lang="ts">
-import {ref, reactive} from 'vue';
+import {ref, reactive, toRefs} from 'vue';
 
+const props = defineProps<{ closePopup: Function }>();
+const {closePopup} = toRefs(props);
 let gameImage: any = ref('');
 let file: any;
 let params = reactive({
@@ -76,6 +118,9 @@ const createImage = (e: Event) => {
   const files = target.files;
   if (!files || !files[0]) return;
   gameImage.value = URL.createObjectURL(files[0])
+}
+const cancelAction = () => {
+  closePopup.value();
 }
 </script>
 
