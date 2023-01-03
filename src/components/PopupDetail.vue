@@ -51,7 +51,13 @@
                     </v-text-field>
                   </v-col>
                   <v-col cols="12" md="6">
-                    <v-select label="Tag" variant="underlined" multiple clearable></v-select>
+                    <v-select label="Tag"
+                              variant="underlined"
+                              multiple clearable
+                              :items="optionGame"
+                              item-title="name"
+                              item-value="id">
+                    </v-select>
                   </v-col>
                 </v-row>
                 <v-row>
@@ -105,6 +111,7 @@
 
 <script setup lang="ts">
 import {ref, reactive, toRefs} from 'vue';
+import {optionGame} from "@/constants/index.constant";
 
 const props = defineProps<{ closePopup: Function }>();
 const {closePopup} = toRefs(props);
