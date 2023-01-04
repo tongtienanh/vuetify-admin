@@ -62,7 +62,7 @@
                   </v-col>
                   <v-col cols="12" md="4">
                     <v-select label="Category"
-                              v-model="params.tags"
+                              v-model="params.categories"
                               variant="underlined"
                               multiple clearable
                               :items="categories"
@@ -147,11 +147,10 @@
 </template>
 
 <script setup lang="ts">
-import {ref, reactive, toRefs} from 'vue';
+import {ref, reactive, toRefs, inject} from 'vue';
 import {optionGame, categories} from "@/constants/index.constant";
 import GameRepository from "@/services/GameRepository";
-import {payloadGame} from "@/interfaces/game.interface";
-import {ResponseEntity} from "@/interfaces/response.interface";
+import Swal from 'sweetalert2'
 
 const props = defineProps<{ closePopup: Function }>();
 const {closePopup} = toRefs(props);
@@ -164,6 +163,7 @@ let params = reactive({
   fShareLink: '',
   description: '',
   content: '',
+  categories: [],
 })
 const createImage = async (e: Event) => {
   const target = e.target as HTMLInputElement;
@@ -189,17 +189,32 @@ const storeGame = async () => {
     image: gameImage.value,
     description: params.description,
     content: params.content,
+    categories:params.categories,
     links: [{type: 1, url: params.googleLink}, {type: 2, url: params.fShareLink}]
   }
-  const response = await GameRepository.create(payload)
-  console.log({response})
+  const response = await GameRepository.create(payload);
+  if (response.data) {
+    Swal.fire({
+      icon: 'success',
+      title: 'Done!',
+    })
+  } else {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Có lỗi xảy ra, thử lại sau!',
+    })
+  }
+
 }
 </script>
 
-<style scoped>
+<style>
 .image-container {
   width: 300px;
   height: 300px;
   background: #99b19c;
+}
+.swal2-container {
+  z-index: 20000 !important;
 }
 </style>
