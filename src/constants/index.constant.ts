@@ -43,3 +43,17 @@ export const optionGame = [
     slug: "giai-do"
   }
 ]
+
+export const GAME_MOI = 1;
+export const PHO_BIEN = 2;
+export const UPDATE_DLC = 3;
+export const VIET_HOA = 4;
+export const categories = [
+  {id: GAME_MOI, name: "Game mới"},
+  {id: PHO_BIEN, name: "Game phổ biến"},
+  {id: UPDATE_DLC, name: "Game update DLC"},
+  {id: VIET_HOA, name: "Game việt hóa"},
+]
+
+
+

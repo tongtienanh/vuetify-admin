@@ -194,7 +194,7 @@
         :total-visible="7"
       ></v-pagination>
     </div>
-    <v-dialog v-model="showPopup" width="1200px" height="1000" scrollable="true">
+    <v-dialog v-model="showPopup" width="1200px" height="1000" scrollable=true>
       <PopupDetail :closePopup="closePopup" />
     </v-dialog>
   </div>

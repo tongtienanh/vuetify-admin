@@ -4,8 +4,8 @@
       <h1>Cập nhật game</h1>
       <div class="bg-amber-accent-1 my-5 pa-2">Thông tin game</div>
       <div>
-        <div>
-          <v-container>
+        <div style="height: 380px">
+          <v-container style="height: 100%">
             <v-row
               align="start"
               no-gutters
@@ -41,7 +41,7 @@
               </v-col>
               <v-col cols="12" md="8">
                 <v-row>
-                  <v-col cols="12" md="6">
+                  <v-col cols="12" md="4">
                     <v-text-field
                       v-model="params.name"
                       label="Name"
@@ -50,11 +50,22 @@
                       clearable>
                     </v-text-field>
                   </v-col>
-                  <v-col cols="12" md="6">
+                  <v-col cols="12" md="4">
                     <v-select label="Tag"
+                              v-model="params.tags"
                               variant="underlined"
                               multiple clearable
                               :items="optionGame"
+                              item-title="name"
+                              item-value="id">
+                    </v-select>
+                  </v-col>
+                  <v-col cols="12" md="4">
+                    <v-select label="Category"
+                              v-model="params.tags"
+                              variant="underlined"
+                              multiple clearable
+                              :items="categories"
                               item-title="name"
                               item-value="id">
                     </v-select>
@@ -84,16 +95,42 @@
                 </v-row>
                 <v-row>
                   <v-col cols="12" md="12">
-                    <v-textarea
-                      v-model="params.description"
-                      label="Description"
+                    <v-text-field
+                      label="Link Việt hóa nếu có"
+                      variant="underlined"
+                      clearable
+                      v-model="params.fShareLink"
                     >
-                    </v-textarea>
+                    </v-text-field>
                   </v-col>
                 </v-row>
               </v-col>
             </v-row>
           </v-container>
+          <div class="pa-4">
+            <v-row>
+              <v-col cols="12" md="12">
+                <v-textarea
+                  v-model="params.description"
+                  label="Description"
+                  clearable
+                  no-resize
+                  rows="1"
+                >
+                </v-textarea>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12" md="12">
+                <v-textarea
+                  v-model="params.content"
+                  label="Content"
+                  clearable
+                >
+                </v-textarea>
+              </v-col>
+            </v-row>
+          </div>
         </div>
       </div>
     </v-card-text>
@@ -102,7 +139,7 @@
         <div></div>
         <div class="py-4 mr-5">
           <v-btn @click="cancelAction" color="red">Hủy</v-btn>
-          <v-btn color="green">Xác nhận</v-btn>
+          <v-btn @click="storeGame" color="green">Xác nhận</v-btn>
         </div>
       </div>
     </v-card-actions>
@@ -111,23 +148,51 @@
 
 <script setup lang="ts">
 import {ref, reactive, toRefs} from 'vue';
-import {optionGame} from "@/constants/index.constant";
+import {optionGame, categories} from "@/constants/index.constant";
+import GameRepository from "@/services/GameRepository";
+import {payloadGame} from "@/interfaces/game.interface";
+import {ResponseEntity} from "@/interfaces/response.interface";
 
 const props = defineProps<{ closePopup: Function }>();
 const {closePopup} = toRefs(props);
 let gameImage: any = ref('');
 let file: any;
 let params = reactive({
-  name: ''
+  name: '',
+  tags: [],
+  googleLink: '',
+  fShareLink: '',
+  description: '',
+  content: '',
 })
-const createImage = (e: Event) => {
+const createImage = async (e: Event) => {
   const target = e.target as HTMLInputElement;
   const files = target.files;
   if (!files || !files[0]) return;
-  gameImage.value = URL.createObjectURL(files[0])
+  console.log("file:", files)
+  let formData = new FormData();
+  formData.append('file', files[0]);
+  const response = await GameRepository.uploadImage(formData);
+  console.log(response)
+
+  if ('data' in response) {
+    gameImage.value = response['data']?.Location;
+  }
 }
 const cancelAction = () => {
   closePopup.value();
+}
+const storeGame = async () => {
+  const payload = {
+    name: params.name,
+    tags: params.tags,
+    image: gameImage.value,
+    description: params.description,
+    content: params.content,
+    links: [{type: 1, url: params.googleLink}, {type: 2, url: params.fShareLink}]
+  }
+  const response = await GameRepository.create(payload)
+  console.log({response})
 }
 </script>
 
