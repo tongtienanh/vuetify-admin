@@ -32,8 +32,8 @@
           <col style="width: 200px"/>
           <col style="width: 250px"/>
           <col style="width: 250px"/>
-          <col style="width: 250px"/>
-          <col style="width: 250px"/>
+          <col style="width: 350px"/>
+          <col style="width: 300px"/>
           <col style="width: 300px"/>
           <col style="width: 80px"/>
         </colgroup>
@@ -43,14 +43,14 @@
           <th>Image</th>
           <th>Name</th>
           <th>Tags</th>
-          <th>Google link</th>
-          <th>Fshare link</th>
+          <th>Link Download</th>
           <th>Description</th>
+          <th>content</th>
           <th>Action</th>
         </tr>
         </thead>
         <tbody>
-        <tr class="alert" role="alert">
+        <tr class="alert" role="alert" v-for="(list, index) in lists" :key="index">
           <td>
             <label class="checkbox-wrap checkbox-primary">
               <input type="checkbox">
@@ -59,123 +59,40 @@
           </td>
           <td>
             <v-img
-              src="https://cdn1.epicgames.com/offer/3428aac705b44d88beb8334780fa33bd/EGS_SEASONAlettertothefuture_ScavengersStudio_S2_1200x1600-fd02caab75848d7b7ab3633bc0503ec7?h=854&resize=1&w=640"></v-img>
+              :src="list.image"></v-img>
           </td>
           <td>
             <div class="email">
-              <span>Sneakers Shoes 2020 For Men </span>
-              <span>Fugiat voluptates quasi nemo, ipsa perferendis</span>
+              <span>{{list.name}}</span>
             </div>
           </td>
           <td>
             <div>
               <v-chip
+                v-for="(tag, iTag) in list.gameTag"
+                :key="iTag"
                 class="ma-1"
                 size="x-small"
-                color="secondary"
+                :color="tag.color"
                 text-color="white"
-              >Action
-              </v-chip>
-              <v-chip
-                class="ma-1"
-                size="x-small"
-                color="green"
-                text-color="white"
-              >Action
-              </v-chip>
-              <v-chip
-                class="ma-1"
-                size="x-small"
-                color="red"
-                text-color="white"
-              >Action
+              >{{tag.name}}
               </v-chip>
             </div>
           </td>
           <td class="quantity">
-            <div class="input-group">
-              <input type="text" name="quantity" class="quantity form-control input-number" value="1" min="1" max="100">
+            <div class="input-group" v-for="(link, iLink) in list.download" :key="iLink">
+              <b>{{link.name}}: </b> <span>{{link.url}}</span>
             </div>
           </td>
-          <td>$30.99</td>
           <td>
-            Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the
-            industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and
-            scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into
-            electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of
-            Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like
-            Aldus PageMaker including versions of Lorem Ipsum.
+            {{list.description}}
+          </td>
+          <td>
+            {{list.content}}
           </td>
           <td class="action">
             <div class="d-flex">
-              <v-btn @click="showPopup = true" icon width="32px" height="32px" class="mr-2">
-                <v-icon>mdi-pencil</v-icon>
-              </v-btn>
-              <v-btn icon width="32px" height="32px">
-                <v-icon>mdi-delete</v-icon>
-              </v-btn>
-            </div>
-          </td>
-        </tr>
-        <tr class="alert" role="alert">
-          <td>
-            <label class="checkbox-wrap checkbox-primary">
-              <input type="checkbox">
-              <span class="checkmark"></span>
-            </label>
-          </td>
-          <td>
-            <v-img
-              src="https://cdn1.epicgames.com/offer/3428aac705b44d88beb8334780fa33bd/EGS_SEASONAlettertothefuture_ScavengersStudio_S2_1200x1600-fd02caab75848d7b7ab3633bc0503ec7?h=854&resize=1&w=640"></v-img>
-          </td>
-          <td>
-            <div class="email">
-              <span>Sneakers Shoes 2020 For Men </span>
-              <span>Fugiat voluptates quasi nemo, ipsa perferendis</span>
-            </div>
-          </td>
-          <td>
-            <div>
-              <v-chip
-                class="ma-1"
-                size="x-small"
-                color="secondary"
-                text-color="white"
-              >Action
-              </v-chip>
-              <v-chip
-                class="ma-1"
-                size="x-small"
-                color="green"
-                text-color="white"
-              >Action
-              </v-chip>
-              <v-chip
-                class="ma-1"
-                size="x-small"
-                color="red"
-                text-color="white"
-              >Action
-              </v-chip>
-            </div>
-          </td>
-          <td class="quantity">
-            <div class="input-group">
-              <input type="text" name="quantity" class="quantity form-control input-number" value="1" min="1" max="100">
-            </div>
-          </td>
-          <td>$30.99</td>
-          <td>
-            Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the
-            industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and
-            scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into
-            electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of
-            Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like
-            Aldus PageMaker including versions of Lorem Ipsum.
-          </td>
-          <td class="action">
-            <div class="d-flex">
-              <v-btn icon width="32px" height="32px" class="mr-2">
+              <v-btn @click="openPopup(list)" icon width="32px" height="32px" class="mr-2">
                 <v-icon>mdi-pencil</v-icon>
               </v-btn>
               <v-btn icon width="32px" height="32px">
@@ -194,20 +111,34 @@
         :total-visible="7"
       ></v-pagination>
     </div>
-    <v-dialog v-model="showPopup" width="1200px" height="1000" scrollable=true>
-      <PopupDetail :closePopup="closePopup" />
+    <v-dialog v-model="showPopup" width="1200px" height="1000" :scrollable="true">
+      <PopupDetail :closePopup="closePopup"/>
     </v-dialog>
   </div>
 </template>
 
 <script lang="ts" setup>
-import {ref, mergeProps} from "vue";
+import {ref, mergeProps, onMounted, reactive} from "vue";
 import PopupDetail from "@/components/PopupDetail.vue";
+import GameRepository from "@/services/GameRepository";
 
+onMounted(() => {
+  getListGame()
+})
+const lists = ref([])
 const page = ref(1);
 const showPopup = ref(false);
 const closePopup = () => {
   showPopup.value = false;
+}
+const getListGame = async () => {
+  const params = {}
+  const response = await GameRepository.getListGame(params)
+  lists.value = response.data
+}
+const openPopup = (game: any) => {
+  console.log({game})
+  showPopup.value = true
 }
 </script>
 <style>

@@ -14,3 +14,11 @@ interface linkDownload {
 export interface payloadImage {
   file: FormData
 }
+
+export interface gameParams {
+  search?: string,
+  tags?: number[],
+  categories?: number[],
+  page?: number;
+  size?: number;
+}
