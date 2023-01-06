@@ -1,5 +1,6 @@
 import Repository from "@/services/Repository";
 import {gameParams, payloadGame, payloadImage} from "@/interfaces/game.interface";
+import {TokenService} from "@/services/token";
 
 export default {
   async create(payload: payloadGame) {
@@ -10,7 +11,8 @@ export default {
   },
   async getListGame(params: gameParams) {
     return await Repository.get("api/game/all", {
-      params
+      params,
+      headers: TokenService.getHeader(),
     })
   }
 }

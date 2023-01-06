@@ -27,7 +27,6 @@ export class TokenService {
   static getHeader() {
     return {
       Authorization: `Bearer ${this.getToken()}`,
-      'Accept-Language': this.getLang() || 'ja',
     }
   }
 }
