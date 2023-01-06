@@ -120,14 +120,14 @@
                 </v-textarea>
               </v-col>
             </v-row>
-            <v-row>
+            <v-row style="height: 300px">
               <v-col cols="12" md="12">
-                <v-textarea
-                  v-model="params.content"
-                  label="Content"
-                  clearable
-                >
-                </v-textarea>
+                <QuillEditor theme="snow" placeholder="Content" toolbar="essential" v-model="params.content"/>
+              </v-col>
+            </v-row>
+            <v-row style="height: 200px; margin-top: 50px;">
+              <v-col cols="12" md="12">
+                <QuillEditor theme="snow" placeholder="Install game" toolbar="essential" v-model="params.content"/>
               </v-col>
             </v-row>
           </div>
@@ -150,7 +150,9 @@
 import {ref, reactive, toRefs, inject} from 'vue';
 import {optionGame, categories} from "@/constants/index.constant";
 import GameRepository from "@/services/GameRepository";
-import Swal from 'sweetalert2'
+import Swal from 'sweetalert2';
+import { QuillEditor } from '@vueup/vue-quill'
+import '@vueup/vue-quill/dist/vue-quill.snow.css';
 
 const props = defineProps<{ closePopup: Function }>();
 const {closePopup} = toRefs(props);

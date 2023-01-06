@@ -18,7 +18,13 @@ export class ResponseEntity<T> {
     return this;
   }
 }
-
+export interface resource {
+  success: boolean,
+  code: number | string,
+  data: any,
+  message: boolean,
+  pagination: PaginationInterface
+}
 export interface PaginationInterface {
   totalPages: number;
   totalElements: number;

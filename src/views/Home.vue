@@ -107,11 +107,11 @@
     <div class="text-center">
       <v-pagination
         v-model="page"
-        :length="15"
+        :length="totalPages"
         :total-visible="7"
       ></v-pagination>
     </div>
-    <v-dialog v-model="showPopup" width="1200px" height="1000" :scrollable="true">
+    <v-dialog v-model="showPopup" width="1200px" height="1000px" :scrollable="true">
       <PopupDetail :closePopup="closePopup"/>
     </v-dialog>
   </div>
@@ -128,16 +128,19 @@ onMounted(() => {
 const lists = ref([])
 const page = ref(1);
 const showPopup = ref(false);
+let totalItem = ref();
+let totalPages = ref();
 const closePopup = () => {
   showPopup.value = false;
 }
 const getListGame = async () => {
   const params = {}
-  const response = await GameRepository.getListGame(params)
-  lists.value = response.data
+  const response = await GameRepository.getListGame(params);
+  totalItem.value = response.pagination.totalElements;
+  totalPages.value = response.pagination.totalPages;
+  lists.value = response.data;
 }
 const openPopup = (game: any) => {
-  console.log({game})
   showPopup.value = true
 }
 </script>

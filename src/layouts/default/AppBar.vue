@@ -1,8 +1,15 @@
 <template>
   <v-app-bar flat style="border-bottom: 1px solid #e9e8e8">
     <v-app-bar-title>
-      <v-icon icon="mdi-circle-slice-6" />
-      Admin
+      <div class="d-flex justify-lg-space-between">
+        <div class="d-flex">
+          <v-icon icon="mdi-circle-slice-6" class="mr-3" />
+          <h1 style="color: rgb(51 198 155)">{{path}}</h1>
+        </div>
+        <div class="pr-4">
+          <v-btn outlined @click="logout">Logout</v-btn>
+        </div>
+      </div>
     </v-app-bar-title>
   </v-app-bar>
   <v-card>
@@ -22,9 +29,9 @@
         <v-divider></v-divider>
 
         <v-list density="compact" nav>
-          <v-list-item prepend-icon="mdi-application  " title="Dashboard" value="Dashboard"></v-list-item>
+          <v-list-item prepend-icon="mdi-application" title="Dashboard" value="Dashboard" href="/"></v-list-item>
           <v-list-item prepend-icon="mdi-bookmark-multiple" title="Slide" value="Slide"></v-list-item>
-          <v-list-item prepend-icon="mdi-star" title="Starred" value="starred"></v-list-item>
+          <v-list-item prepend-icon="mdi-star" title="Danh sách quyền" value="Danh sách quyền" href="/module"></v-list-item>
         </v-list>
       </v-navigation-drawer>
       <DefaultView/>
@@ -32,8 +39,20 @@
   </v-card>
 </template>
 
-<script lang="ts" setup>
+<script setup>
+import {ref, onBeforeMount, computed, reactive} from 'vue';
 import DefaultView from './View.vue'
+import {TokenService} from "@/services/token";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
+const title = ref('')
+const path = router.currentRoute.value.name;
+const logout = () => {
+  TokenService.removeToken();
+  window.location.href = '/login';
+}
+
 
   //
 </script>

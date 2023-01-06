@@ -41,7 +41,6 @@ const router = useRouter()
 const rules = reactive({
   required: value => !!value || 'Required.',
   min: v => v.length >= 6 || 'Min 6 characters',
-  emailMatch: () => (`The email and password you entered don't match`),
 })
 const password = ref('');
 const username = ref('');
@@ -54,7 +53,7 @@ const login = async () => {
   const res = await AuthRepository.login(params);
   if (res.success) {
     TokenService.setToken(res.data?.access_token);
-    router.push('/')
+    window.location.href = '/'
   }
 }
 </script>
