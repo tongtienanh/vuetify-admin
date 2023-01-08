@@ -8,14 +8,16 @@
             label="Tên quyền *"
             clearable
             variant="underlined"
+            v-model="permissonDetail.name"
           >
           </v-text-field>
         </v-col>
         <v-col cols="12" md="6">
           <v-text-field
-            label="description"
+            label="Description"
             clearable
             variant="underlined"
+            v-model="permissonDetail.description"
           >
           </v-text-field>
         </v-col>
@@ -50,26 +52,49 @@
           <td>
             Name
           </td>
-          <td><v-checkbox></v-checkbox></td>
-          <td><v-checkbox></v-checkbox></td>
-          <td><v-checkbox></v-checkbox></td>
-          <td><v-checkbox></v-checkbox></td>
-          <td><v-checkbox></v-checkbox></td>
+          <td>
+            <v-checkbox></v-checkbox>
+          </td>
+          <td>
+            <v-checkbox></v-checkbox>
+          </td>
+          <td>
+            <v-checkbox></v-checkbox>
+          </td>
+          <td>
+            <v-checkbox></v-checkbox>
+          </td>
+          <td>
+            <v-checkbox></v-checkbox>
+          </td>
         </tr>
         </tbody>
-        <tfoot>
-        <tr class="pa-4">
-          <v-btn color="primary" style="transform: translate(1400%, 10px)">Xác nhận</v-btn>
-        </tr>
-        </tfoot>
       </v-table>
+      <div class="d-flex justify-space-between">
+        <div></div>
+        <v-btn class="mr-10" color="primary">Xác nhận</v-btn>
+      </div>
     </div>
   </div>
 </template>
 
-<script>
-export default {
-  name: "Role"
+<script setup>
+import {onBeforeMount, reactive, ref} from "vue";
+import aclRepository from "../services/AclRepository";
+import {useRouter} from "vue-router/dist/vue-router";
+
+onBeforeMount(() => {
+  getPermission()
+})
+const router = useRouter();
+const permissionId = router.currentRoute.value.params.id;
+const permissonDetail = ref({
+  name: '',
+  description: ''
+});
+const getPermission = async () => {
+  const response = await aclRepository.getPermission(permissionId);
+  permissonDetail.value = response.data
 }
 </script>
 

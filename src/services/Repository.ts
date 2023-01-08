@@ -36,12 +36,6 @@ axiosInstance.interceptors.response.use(
         message: get(response, 'data.message', null)
       }
     }
-    if (statusCode === STATUS_TOKEN_EXPIRED || statusCode === STATUS_UNAUTHORIZED) {
-      throw new Error("Loi")
-    }
-    if (statusCode === STATUS_CODE_FORBIDDEN) {
-      throw new Error("FORBIDDEN")
-    }
     return {
       error: true,
       message: get(response, 'data.message', ''),
@@ -52,26 +46,10 @@ axiosInstance.interceptors.response.use(
   },
 
   async (error) => {
-    if (error.response) {
-      return {
-        error: true,
-        status: STATUS_INTERNAL_SERVER_ERROR,
-        message: get(error, 'message', ''),
-        errors: get(error, 'response.data', {}),
-        data: get(error,'data',[])
-      }
-    } if (error.request) {
-      return {
-        error: true,
-        status: STATUS_INTERNAL_SERVER_ERROR,
-        message: get(error, 'message', ''),
-        errors: get(error, 'request', {}),
-      }
-    }
-    return {
-      error: true,
-      status: STATUS_INTERNAL_SERVER_ERROR,
-      message: get(error, 'message', ''),
+    if (STATUS_UNAUTHORIZED === error.response.status || STATUS_TOKEN_EXPIRED == error.response.status) {
+      window.location.href = '/login';
+    } else {
+      return Promise.reject(error);
     }
   }
   ,

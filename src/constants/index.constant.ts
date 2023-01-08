@@ -54,6 +54,10 @@ export const categories = [
   {id: UPDATE_DLC, name: "Game update DLC"},
   {id: VIET_HOA, name: "Game việt hóa"},
 ]
-
+export const LINK_TYPE = [
+  {id: 1, name: "Google"},
+  {id: 2, name: "Fshare"},
+  {id: 3, name: "Việt hóa"},
+]
 
 

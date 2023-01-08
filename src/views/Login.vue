@@ -53,6 +53,7 @@ const login = async () => {
   const res = await AuthRepository.login(params);
   if (res.success) {
     TokenService.setToken(res.data?.access_token);
+    TokenService.setUser(res.data.userId)
     window.location.href = '/'
   }
 }

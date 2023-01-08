@@ -8,21 +8,65 @@
               <v-tooltip location="top">
                 <template v-slot:activator="{ props: tooltip }">
                   <v-btn
+                    icon
                     color="red"
+                    width="36"
+                    height="36"
                     v-bind="mergeProps(menu, tooltip)"
                   >
-                    <v-icon>mdi-alert-octagon</v-icon>
-                    Xóa item
+                    <v-icon>
+                      mdi-minus
+                    </v-icon>
                   </v-btn>
                 </template>
-                <span>I'm A Tooltip</span>
+                <span>Xóa nhiều game</span>
               </v-tooltip>
             </template>
           </v-menu>
         </div>
       </div>
+      <div class="d-flex align-center" style="width: 500px;">
+        <div style="width: 90%;">
+          <v-text-field variant="underlined" v-model="search" @change="getListGame"></v-text-field>
+        </div>
+        <div style="position: relative; width: 30%;">
+          <v-btn @click="getListGame" class="ml-4" color="primary"
+                 style="width: 100%; height: 35px; text-transform: initial">
+            Tìm kiếm
+          </v-btn>
+          <div>
+            <v-menu
+              v-model="menu"
+              :close-on-content-click="false"
+              location="bottom"
+            >
+              <template v-slot:activator="{ props }">
+                <v-icon v-bind="props" class="ml-3 icon-filter">mdi-chevron-down</v-icon>
+              </template>
+              <v-card min-width="500px" min-height="100px">
+                <div style="padding: 20px 20px">
+                  <v-row>
+                    <v-col cols="12" md="6">
+                      <v-select v-model="tags" label="Tags" multiple :items="optionGame" item-title="name"
+                                item-value="id" clearable>
+                      </v-select>
+                    </v-col>
+                    <v-col cols="12" md="6">
+                      <v-select v-model="category" label="categories" multiple :items="categories" item-value="id"
+                                item-title="name" clearable>
+                      </v-select>
+                    </v-col>
+                  </v-row>
+                </div>
+              </v-card>
+            </v-menu>
+          </div>
+        </div>
+      </div>
       <div>
-        <v-btn @click="showPopup = true" color="green">Thêm mới</v-btn>
+        <v-btn icon width="36" height="36" @click="showPopup = true" color="green">
+          <v-icon>mdi-plus</v-icon>
+        </v-btn>
       </div>
     </div>
     <div class="table-item">
@@ -63,7 +107,7 @@
           </td>
           <td>
             <div class="email">
-              <span>{{list.name}}</span>
+              <span>{{ list.name }}</span>
             </div>
           </td>
           <td>
@@ -75,20 +119,20 @@
                 size="x-small"
                 :color="tag.color"
                 text-color="white"
-              >{{tag.name}}
+              >{{ tag.name }}
               </v-chip>
             </div>
           </td>
           <td class="quantity">
             <div class="input-group" v-for="(link, iLink) in list.download" :key="iLink">
-              <b>{{link.name}}: </b> <span>{{link.url}}</span>
+              <b>{{ link.name }}: </b> <span>{{ link.url }}</span>
             </div>
           </td>
           <td>
-            {{list.description}}
+            {{ list.description }}
           </td>
           <td>
-            {{list.content}}
+            {{ list.content }}
           </td>
           <td class="action">
             <div class="d-flex">
@@ -112,36 +156,49 @@
       ></v-pagination>
     </div>
     <v-dialog v-model="showPopup" width="1200px" height="1000px" :scrollable="true">
-      <PopupDetail :closePopup="closePopup"/>
+      <PopupDetail :closePopup="closePopup" :gameDetail="gameDetail" />
     </v-dialog>
   </div>
+
 </template>
 
 <script lang="ts" setup>
 import {ref, mergeProps, onMounted, reactive} from "vue";
 import PopupDetail from "@/components/PopupDetail.vue";
 import GameRepository from "@/services/GameRepository";
+import {optionGame, categories} from "../constants/index.constant"
 
 onMounted(() => {
   getListGame()
 })
-const lists = ref([])
+
+const menu = ref(false)
+const search = ref('');
+const tags = ref([]);
+const category = ref([]);
+const lists = ref([]);
 const page = ref(1);
 const showPopup = ref(false);
 let totalItem = ref();
 let totalPages = ref();
+const gameDetail = ref();
 const closePopup = () => {
   showPopup.value = false;
 }
 const getListGame = async () => {
-  const params = {}
+  const params = {
+    search: search.value,
+    tags: tags.value,
+    categories: category.value,
+  }
   const response = await GameRepository.getListGame(params);
   totalItem.value = response.pagination.totalElements;
   totalPages.value = response.pagination.totalPages;
   lists.value = response.data;
 }
 const openPopup = (game: any) => {
-  showPopup.value = true
+  showPopup.value = true;
+  gameDetail.value = game;
 }
 </script>
 <style>
@@ -220,5 +277,12 @@ label {
 
 .alert:hover {
   background: #99b19c !important;
+}
+
+.icon-filter {
+  position: absolute;
+  top: 6px;
+  right: -12px;
+  color: #fff;
 }
 </style>

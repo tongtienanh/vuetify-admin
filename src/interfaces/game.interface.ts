@@ -5,6 +5,7 @@ export interface payloadGame {
   content: string,
   tags: number[]
   links: linkDownload[],
+  categories: number[],
 
 }
 interface linkDownload {
