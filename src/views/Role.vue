@@ -84,6 +84,7 @@ import aclRepository from "../services/AclRepository";
 import {useRouter} from "vue-router/dist/vue-router";
 
 onBeforeMount(() => {
+  console.log("vao day")
   getPermission()
 })
 const router = useRouter();
@@ -94,6 +95,7 @@ const permissonDetail = ref({
 });
 const getPermission = async () => {
   const response = await aclRepository.getPermission(permissionId);
+  console.log("res:", response)
   permissonDetail.value = response.data
 }
 </script>

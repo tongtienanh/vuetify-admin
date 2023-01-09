@@ -38,9 +38,8 @@
           </span>
           <v-icon
             small
-            @click="parent.selectItem(item)"
           >
-            $delete
+            mdi-delete
           </v-icon>
         </v-chip>
       </template>

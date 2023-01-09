@@ -13,7 +13,7 @@
               >
                 <v-col cols="12" md="4">
                   <div class="picture">
-                    <div v-if="!gameImage">
+                    <div v-if="!params.image">
                       <label for="avatar">
                         <div class="image-container d-flex align-center justify-center">
                           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="0.5"
@@ -31,7 +31,7 @@
                     <div v-else>
                       <label for="avatar">
                         <div style="width: 300px; height: 300px">
-                          <v-img :src="gameImage"></v-img>
+                          <v-img :src="params.image" cover></v-img>
                           <input @change="createImage($event)" type="file" name="avatar" id="avatar"
                                  accept="image/png, image/jpeg" class="d-none"/>
                         </div>
@@ -54,7 +54,7 @@
                   <v-row>
                     <v-col cols="12" md="6">
                       <v-select label="Tag"
-                                v-model="params.tags"
+                                v-model="params.gameTag"
                                 variant="underlined"
                                 multiple clearable
                                 :items="optionGame"
@@ -65,7 +65,7 @@
                     </v-col>
                     <v-col cols="12" md="6">
                       <v-select label="Category"
-                                v-model="params.categories"
+                                v-model="params.gameCategory"
                                 variant="underlined"
                                 multiple clearable
                                 :items="categories"
@@ -166,16 +166,17 @@ let gameImage: any = ref('');
 let file: any;
 let params = reactive({
   name: '',
-  tags: [],
+  gameTag: [],
   links: [],
   description: '',
   content: '',
-  categories: [],
+  gameCategory: [],
   image: '',
 })
 onMounted(() => {
   if (gameDetail.value) {
     params = gameDetail.value;
+    arrayLinks.value = gameDetail.value.download;
   }
 })
 const createImage = async (e: Event) => {
@@ -196,11 +197,11 @@ const storeGame = async () => {
   await form.value.validate();
   const payload: payloadGame = {
     name: params.name,
-    tags: params.tags,
+    tags: params.gameTag,
     image: gameImage.value,
     description: params.description,
     content: params.content,
-    categories: params.categories,
+    categories: params.gameCategory,
     links: arrayLinks.value,
   }
   const response = await GameRepository.create(payload);
@@ -217,7 +218,7 @@ const storeGame = async () => {
   }
 }
 const addLinkOption = () => {
-  arrayLinks.value.push({type: 1, link: ''})
+  arrayLinks.value.push({type: 1, url: ''})
 }
 </script>
 

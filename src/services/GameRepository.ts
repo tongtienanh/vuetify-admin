@@ -1,5 +1,5 @@
 import Repository from "@/services/Repository";
-import {gameParams, payloadGame, payloadImage} from "@/interfaces/game.interface";
+import {deleteParam, gameParams, payloadGame, payloadImage} from "@/interfaces/game.interface";
 import {TokenService} from "@/services/token";
 import {resource} from "@/interfaces/response.interface";
 
@@ -12,6 +12,12 @@ export default {
   },
   async getListGame(params: gameParams): Promise<resource> {
     return await Repository.get("api/game/all", {
+      params,
+      headers: TokenService.getHeader(),
+    })
+  },
+  async deleteGame(params: deleteParam): Promise<resource> {
+    return await Repository.delete("api/game/delete", {
       params,
       headers: TokenService.getHeader(),
     })

@@ -139,7 +139,7 @@
               <v-btn @click="openPopup(list)" icon width="32px" height="32px" class="mr-2">
                 <v-icon>mdi-pencil</v-icon>
               </v-btn>
-              <v-btn icon width="32px" height="32px">
+              <v-btn @click="deleteGame(list.id)" icon width="32px" height="32px">
                 <v-icon>mdi-delete</v-icon>
               </v-btn>
             </div>
@@ -156,7 +156,7 @@
       ></v-pagination>
     </div>
     <v-dialog v-model="showPopup" width="1200px" height="1000px" :scrollable="true">
-      <PopupDetail :closePopup="closePopup" :gameDetail="gameDetail" />
+      <PopupDetail :closePopup="closePopup" :gameDetail="gameDetail"/>
     </v-dialog>
   </div>
 
@@ -167,6 +167,8 @@ import {ref, mergeProps, onMounted, reactive} from "vue";
 import PopupDetail from "@/components/PopupDetail.vue";
 import GameRepository from "@/services/GameRepository";
 import {optionGame, categories} from "../constants/index.constant"
+import {deleteParam} from "@/interfaces/game.interface";
+import Swal from 'sweetalert2';
 
 onMounted(() => {
   getListGame()
@@ -199,6 +201,37 @@ const getListGame = async () => {
 const openPopup = (game: any) => {
   showPopup.value = true;
   gameDetail.value = game;
+}
+
+const deleteGame = async (gameid: number) => {
+  Swal.fire({
+    title: 'Xóa game?',
+    text: "Hãy chắc chắn điều này",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Xóa game!',
+    cancelButtonText: 'Đóng',
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      const params: deleteParam = {
+        ids: [+gameid]
+      }
+      const response = await GameRepository.deleteGame(params);
+      if (response.data) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Done!',
+          timer: 1000,
+        })
+        getListGame();
+      }
+    }
+  })
+
+
+
 }
 </script>
 <style>

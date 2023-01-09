@@ -23,3 +23,6 @@ export interface gameParams {
   page?: number;
   size?: number;
 }
+export interface deleteParam {
+  ids: number[];
+}

@@ -46,7 +46,8 @@ axiosInstance.interceptors.response.use(
   },
 
   async (error) => {
-    if (STATUS_UNAUTHORIZED === error.response.status || STATUS_TOKEN_EXPIRED == error.response.status) {
+    console.log(error)
+    if (STATUS_UNAUTHORIZED === error.response?.status || STATUS_TOKEN_EXPIRED == error.response?.status) {
       window.location.href = '/login';
     } else {
       return Promise.reject(error);
