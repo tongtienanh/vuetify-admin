@@ -3,22 +3,24 @@
     <v-row>
       <v-col cols="12" md="6" v-for="(module, index) in modules" :key="index">
         <v-card elevation="2" class="card-module">
-          <v-card-title class="d-flex justify-space-between" style="background: #f3f2f9; color: #000000DE; font-weight: bold;">
+          <v-card-title class="d-flex justify-space-between align-center" style="background: #f3f2f9; color: #000000DE; font-weight: bold;">
             <div>{{module.name}}</div>
-            <v-btn height="30" color="green" class="text-capitalize new-module" style="font-size: 12px; font-weight: 500;">Thêm quyền</v-btn>
+            <div class="pr-4">
+              <v-checkbox class="checkbox-permission"></v-checkbox>
+            </div>
           </v-card-title>
           <v-card-text>
             <v-list>
               <v-list-item-group>
                 <v-list-item class="d-flex align-center item-topic" v-for="(permission, iPer) in module.permissions" :key="iPer">
                   <v-list-item-icon>
-                    <v-icon class="pb-2" style="width: 32px; height: 32px">mdi-account-settings-outline</v-icon>
+                    <strong class="pb-2" style="font-size: 16px;">{{iPer + 1}}.</strong>
                   </v-list-item-icon>
-                  <v-list-item-content class="ml-3 d-flex justify-space-between" style="width: 100%;">
+                  <v-list-item-content class="ml-3 d-flex justify-space-between align-center" style="width: 100%;">
                     <v-list-item-title style="font-size: 18px;">{{permission.name}}</v-list-item-title>
                     <div class="d-flex align-center">
-                      <v-btn @click="editPermission(permission.id)" icon width="32" height="32" flat><v-icon>mdi-pencil-outline</v-icon></v-btn>
-                      <v-btn icon width="32" height="32" flat><v-icon>mdi-delete-outline</v-icon></v-btn>
+                      <v-checkbox class="checkbox-permission"></v-checkbox>
+<!--                      <v-btn icon width="32" height="32" flat><v-icon>mdi-delete-outline</v-icon></v-btn>-->
                     </div>
                   </v-list-item-content>
                 </v-list-item>
@@ -28,6 +30,10 @@
         </v-card>
       </v-col>
     </v-row>
+    <div class="mt-5 d-flex justify-space-between">
+      <div></div>
+      <v-btn class="mr-10" color="primary">Xác nhận</v-btn>
+    </div>
   </div>
 </template>
 
@@ -42,9 +48,6 @@ const getModules = async () => {
   const response = await AclRepository.getModules()
   modules.value = response.data;
 }
-const editPermission = (permissionId) => {
-  window.open(`module/role/${permissionId}`)
-}
 </script>
 
 <style>
@@ -56,8 +59,7 @@ const editPermission = (permissionId) => {
 .new-module {
   display: none!important;
 }
-.card-module:hover .new-module{
-  display: block!important;
+.checkbox-permission .v-input__details {
+  display: none!important;
 }
-
 </style>
