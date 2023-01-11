@@ -1,16 +1,17 @@
 import Repository from "@/services/Repository";
 import {resource} from "@/interfaces/response.interface";
 import {TokenService} from "@/services/token";
+import {RoleInterface} from "@/interfaces/role.interface";
 
 export default {
   async getModules(): Promise<resource> {
-    return await Repository.get("api/module", {
+    return await Repository.get("api/role/module", {
       headers: TokenService.getHeader(),
     });
   },
-  async getPermission(id: number): Promise<resource> {
-    return await Repository.get(`api/module/permission/${id}`, {
+  async storeRole(params: RoleInterface): Promise<resource> {
+    return await Repository.post("api/role", params, {
       headers: TokenService.getHeader(),
-    });
+    })
   }
 }

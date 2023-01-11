@@ -12,16 +12,11 @@ const routes = [
         name: 'Home',
         component: () => import(/* webpackChunkName: "home" */ '@/views/Home.vue'),
       },
-      // {
-      //   path: 'module',
-      //   name: 'Module',
-      //   component: () => import(/* webpackChunkName: "home" */ '@/views/Module.vue'),
-      // },
-      // {
-      //   path: 'module/role/:id',
-      //   name: 'Module',
-      //   component: () => import(/* webpackChunkName: "home" */ '@/views/Module.vue'),
-      // },
+      {
+        path: '/account',
+        name: 'Account',
+        component: () => import(/* webpackChunkName: "home" */ '@/views/Account.vue'),
+      },
     ],
   },
   {
@@ -36,16 +31,11 @@ const routes = [
     ],
   },
   {
-    path: '/module',
+    path: '/role',
     component: () => import('@/layouts/default/Default.vue'),
     children: [
       {
         path: '',
-        name: 'Module',
-        component: () => import(/* webpackChunkName: "home" */ '@/views/Module.vue'),
-      },
-      {
-        path: 'role/:id',
         name: 'Role',
         component: () => import(/* webpackChunkName: "home" */ '@/views/Role.vue'),
       },

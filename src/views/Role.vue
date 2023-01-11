@@ -1,107 +1,135 @@
 <template>
   <div class="pa-5">
-    <div>
-      <h1 class="mb-10">Thông tin quyền</h1>
+    <v-form ref="formRole">
       <v-row>
-        <v-col cols="12" md="6">
-          <v-text-field
-            label="Tên quyền *"
-            clearable
-            variant="underlined"
-            v-model="permissonDetail.name"
-          >
-          </v-text-field>
+        <v-col cols="12" md="12">
+          <v-text-field v-model="params.name" :rules="[v => !!v || 'Tên vai trò là bắt buộc']" label="Tên vai trò"></v-text-field>
         </v-col>
-        <v-col cols="12" md="6">
-          <v-text-field
-            label="Description"
-            clearable
-            variant="underlined"
-            v-model="permissonDetail.description"
-          >
-          </v-text-field>
+        <v-col cols="12" md="12">
+          <v-textarea v-model="params.description"  label="Mô tả" rows="2"></v-textarea>
         </v-col>
       </v-row>
-    </div>
-    <div>
-      <v-table hover fixed-header fixed-footer class="table-role">
-        <thead>
-        <tr>
-          <th class="text-left" style="width: 500px;">
-            Name
-          </th>
-          <th class="text-left">
-            Truy cập
-          </th>
-          <th class="text-left">
-            Thêm
-          </th>
-          <th class="text-left">
-            Sửa
-          </th>
-          <th class="text-left">
-            Xóa
-          </th>
-          <th class="text-left">
-            Tất cả
-          </th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-          <td>
-            Name
-          </td>
-          <td>
-            <v-checkbox></v-checkbox>
-          </td>
-          <td>
-            <v-checkbox></v-checkbox>
-          </td>
-          <td>
-            <v-checkbox></v-checkbox>
-          </td>
-          <td>
-            <v-checkbox></v-checkbox>
-          </td>
-          <td>
-            <v-checkbox></v-checkbox>
-          </td>
-        </tr>
-        </tbody>
-      </v-table>
-      <div class="d-flex justify-space-between">
+      <v-row>
+        <v-col cols="12" md="6" v-for="(module, index) in modules" :key="index">
+          <v-card elevation="2" class="card-module">
+            <v-card-title class="d-flex justify-space-between align-center"
+                          style="background: #f3f2f9; color: #000000DE; font-weight: bold;">
+              <div>{{ module.name }}</div>
+              <div class="pr-4">
+                <v-checkbox v-model="module.checkAll" @change="checkAll(module)" class="checkbox-permission"></v-checkbox>
+              </div>
+            </v-card-title>
+            <v-card-text>
+              <v-list>
+                <v-list-item-group>
+                  <v-list-item class="d-flex align-center item-topic" v-for="(permission, iPer) in module.permissions"
+                               :key="iPer">
+                    <v-list-item-icon>
+                      <strong class="pb-2" style="font-size: 16px;">{{ iPer + 1 }}.</strong>
+                    </v-list-item-icon>
+                    <v-list-item-content class="ml-3 d-flex justify-space-between align-center" style="width: 100%;">
+                      <v-list-item-title style="font-size: 18px;">{{ permission.name }}</v-list-item-title>
+                      <div class="d-flex align-center">
+                        <v-checkbox class="checkbox-permission" v-model="permission.check" @change="getPermissionId(permission)"></v-checkbox>
+                      </div>
+                    </v-list-item-content>
+                  </v-list-item>
+                </v-list-item-group>
+              </v-list>
+            </v-card-text>
+          </v-card>
+        </v-col>
+      </v-row>
+      <div class="mt-5 d-flex justify-space-between">
         <div></div>
-        <v-btn class="mr-10" color="primary">Xác nhận</v-btn>
+        <v-btn @click="submitRole" class="mr-10" color="primary">Xác nhận</v-btn>
       </div>
-    </div>
+    </v-form>
   </div>
 </template>
 
 <script setup>
-import {onBeforeMount, reactive, ref} from "vue";
-import aclRepository from "../services/AclRepository";
-import {useRouter} from "vue-router/dist/vue-router";
+import {onMounted, ref, watch} from "vue";
+import AclRepository from "../services/AclRepository";
 
-onBeforeMount(() => {
-  console.log("vao day")
-  getPermission()
+onMounted(() => {
+  getModules();
 })
-const router = useRouter();
-const permissionId = router.currentRoute.value.params.id;
-const permissonDetail = ref({
+const params = ref({
   name: '',
-  description: ''
-});
-const getPermission = async () => {
-  const response = await aclRepository.getPermission(permissionId);
-  console.log("res:", response)
-  permissonDetail.value = response.data
+  description: '',
+  permissionsId: []
+})
+const checkbox = ref();
+const formRole = ref();
+const modules = ref([]);
+const getModules = async () => {
+  const response = await AclRepository.getModules()
+  modules.value = response.data;
+  modules.value = modules.value.map((item) => {
+    const permissions = item.permissions.map((iPer) => {
+      return {
+        ...iPer,
+        check: false
+      }
+    })
+    return {
+      ...item,
+      permissions,
+      checkAll: false
+    }
+  })
 }
+const submitRole = async () => {
+  await formRole.value.validate();
+  const response = await AclRepository.storeRole(params.value)
+  console.log("response:", response);
+}
+const getPermissionId = (permissionId) => {
+  if (permissionId.check) {
+    params.value.permissionsId.push(permissionId.id)
+  }
+  else {
+    params.value.permissionsId = params.value.permissionsId.filter(item => item != permissionId.id)
+  }
+}
+const checkAll = (module) => {
+  module.checkAll = !module.checkAll
+    params.value.permissionsId = [];
+    modules.value.forEach((item) => {
+      item.permissions.forEach((iPer) => {
+        if (item.id == module.id && module.checkAll) {
+          iPer.check = true;
+          params.value.permissionsId.push(iPer.id)
+        } else if (item.id == module.id && !module.checkAll) {
+          iPer.check = false;
+          params.value.permissionsId = params.value.permissionsId.filter(item => item != iPer.id)
+
+        }
+      })
+    })
+}
+watch(modules, (currentState, prevState) => {
+  modules.value.forEach((iModule) => {
+    const checkAll = iModule.permissions.every(item => item.check)
+    if (checkAll) iModule.checkAll = true;
+    else iModule.checkAll = false;
+  })
+}, {deep: true})
 </script>
 
 <style>
-.table-role table {
-  padding: 16px 0;
+.item-topic .v-list-item__content {
+  display: flex !important;
+  align-items: center !important;
+  width: 100%;
+}
+
+.new-module {
+  display: none !important;
+}
+
+.checkbox-permission .v-input__details {
+  display: none !important;
 }
 </style>
