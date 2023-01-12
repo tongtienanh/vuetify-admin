@@ -13,5 +13,10 @@ export default {
     return await Repository.post("api/role", params, {
       headers: TokenService.getHeader(),
     })
+  },
+  async getListRole(): Promise<resource> {
+    return await Repository.get("api/role/all", {
+      headers: TokenService.getHeader(),
+    })
   }
 }

@@ -31,7 +31,7 @@
                                 :rules="[v => !!v || 'username là bắt buộc']"></v-text-field>
                 </v-col>
                 <v-col cols="12" md="6">
-                  <v-text-field label="full name" clearable v-model="params.fullname"
+                  <v-text-field label ="full name" clearable v-model="params.fullname"
                                 :rules="[v => !!v || 'fullname là bắt buộc']"></v-text-field>
                 </v-col>
               </v-row>
@@ -53,9 +53,9 @@
                 <v-col cols="12" md="6">
                   <v-text-field
                     label="password"
-                    v-model="params.password"
+                    v-model="params.repeatPassWord"
                     :append-icon="show2 ? 'mdi-eye' : 'mdi-eye-off'"
-                    :rules="[rules.required, rules.min]"
+                    :rules="[rules.required, rules.min, rules.match]"
                     :type="show2 ? 'text' : 'password'"
                     name="input-10-1"
                     hint="Tối thiểu 6 từ"
@@ -70,6 +70,10 @@
           <v-row class="mt-10 px-5">
             <v-autocomplete
               label="Nhóm quyền"
+              multiple
+              :items="roles"
+              item-value="id"
+              item-title="name"
               v-model="params.roleIds"
               :rules="[v => !!v.length || 'fullname là bắt buộc']"
             >
@@ -89,13 +93,29 @@
 </template>
 
 <script setup>
-import {ref, toRefs} from "vue";
+import {ref, toRefs, onMounted, onBeforeUnmount} from "vue";
+import AclRepository from "@/services/AclRepository";
+import {get} from "lodash"
+import UserRepository from "@/services/UserRepository";
+import Swal from 'sweetalert2';
 
-const props = defineProps({ closePopup: Function });
-const {closePopup} = toRefs(props);
+onMounted(() => {
+  getListRole();
+  console.log(detailUser.value)
+  if (detailUser.value) {
+    params.value = detailUser.value;
+  }
+})
+onBeforeUnmount(() => {
+
+})
+const props = defineProps({closePopup: Function, getListUser: Function, detailUser: Object});
+const {closePopup, getListUser, detailUser} = toRefs(props);
 const show1 = ref(false);
 const show2 = ref(false);
 const form = ref();
+const roles = ref();
+const repeatPassWord = ref('')
 const params = ref({
   username: '',
   password: '',
@@ -105,15 +125,32 @@ const params = ref({
 const rules = {
   required: value => !!value || 'Password là bắt buộc.',
   min: v => v.length >= 6 || 'Tối thiểu 6 từ',
+  match: v => v === params.value.password || 'Mật khẩu chưa khớp!'
 }
-const submit = () => {
+const submit = async () => {
   form.value.validate();
+  const request = params.value;
+  const response = await UserRepository.create(request);
+  if (response.success) {
+    Swal.fire({
+      icon: 'success',
+      title: 'Thêm mới người dùng thành công!',
+    })
+    await getListUser.value()
+  }
+  console.log("response create user:", response)
 }
 const close = () => {
   closePopup.value();
 }
+const getListRole = async () => {
+  const response = await AclRepository.getListRole();
+  roles.value = get(response, "data", []);
+}
 </script>
 
-<style scoped>
-
+<style>
+.swal2-container {
+  z-index: 20000 !important;
+}
 </style>
