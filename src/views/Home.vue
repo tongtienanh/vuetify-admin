@@ -13,6 +13,7 @@
                     width="36"
                     height="36"
                     v-bind="mergeProps(menu, tooltip)"
+                    @click="delteMore"
                   >
                     <v-icon>
                       mdi-minus
@@ -72,7 +73,7 @@
     <div class="table-item">
       <table class="table">
         <colgroup>
-          <col style="width: 40px"/>
+          <col style="width: 50px"/>
           <col style="width: 200px"/>
           <col style="width: 250px"/>
           <col style="width: 250px"/>
@@ -96,10 +97,7 @@
         <tbody>
         <tr class="alert" role="alert" v-for="(list, index) in lists" :key="index">
           <td>
-            <label class="checkbox-wrap checkbox-primary">
-              <input type="checkbox">
-              <span class="checkmark"></span>
-            </label>
+            <v-checkbox v-model="list.check"></v-checkbox>
           </td>
           <td>
             <v-img
@@ -124,8 +122,8 @@
             </div>
           </td>
           <td class="quantity">
-            <div class="input-group" v-for="(link, iLink) in list.download" :key="iLink">
-              <b>{{ link.name }}: </b> <span>{{ link.url }}</span>
+            <div class="input-group mt-2" v-for="(link, iLink) in list.download" :key="iLink">
+              <b>{{ type[link.type] }}: </b> <a :href="link.url" target="_blank">{{ link.url }}</a>
             </div>
           </td>
           <td>
@@ -156,7 +154,7 @@
       ></v-pagination>
     </div>
     <v-dialog v-model="showPopup" width="1200px" height="1000px" :scrollable="true">
-      <PopupDetail :closePopup="closePopup" :gameDetail="gameDetail"/>
+      <PopupDetail :closePopup="closePopup" :gameDetail="gameDetail" :getListGame="getListGame" />
     </v-dialog>
   </div>
 
@@ -166,7 +164,7 @@
 import {ref, mergeProps, onMounted, reactive} from "vue";
 import PopupDetail from "@/components/PopupDetail.vue";
 import GameRepository from "@/services/GameRepository";
-import {optionGame, categories} from "../constants/index.constant"
+import {optionGame, categories, type} from "../constants/index.constant"
 import {deleteParam} from "@/interfaces/game.interface";
 import Swal from 'sweetalert2';
 
@@ -196,14 +194,25 @@ const getListGame = async () => {
   const response = await GameRepository.getListGame(params);
   totalItem.value = response.pagination.totalElements;
   totalPages.value = response.pagination.totalPages;
-  lists.value = response.data;
+  const res = response.data.map((item: any) => {
+    const image = item.media.find((iMedia: { size: string; }) => iMedia.size == "203x271")
+    return {
+      ...item,
+      image: image.uri,
+      check: false
+    }
+  })
+  lists.value = res;
+  console.log("response.data:", res)
+  console.log("lists.value:", lists.value)
+
 }
 const openPopup = (game: any) => {
   showPopup.value = true;
   gameDetail.value = game;
 }
 
-const deleteGame = async (gameid: number) => {
+const deleteGame = async (gameid: any, gameIds?: any) => {
   Swal.fire({
     title: 'Xóa game?',
     text: "Hãy chắc chắn điều này",
@@ -215,8 +224,13 @@ const deleteGame = async (gameid: number) => {
     cancelButtonText: 'Đóng',
   }).then(async (result) => {
     if (result.isConfirmed) {
-      const params: deleteParam = {
+      let params: deleteParam = {
         ids: [+gameid]
+      }
+      if (gameIds && gameIds.length) {
+        params = {
+          ids: gameIds
+        }
       }
       const response = await GameRepository.deleteGame(params);
       if (response.data) {
@@ -229,9 +243,10 @@ const deleteGame = async (gameid: number) => {
       }
     }
   })
-
-
-
+}
+const delteMore = async () => {
+  const gameIds = lists.value.filter(s => s["check"]).map(item => item["id"])
+   await deleteGame( null, gameIds)
 }
 </script>
 <style>

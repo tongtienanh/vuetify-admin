@@ -155,13 +155,15 @@ import {QuillEditor} from '@vueup/vue-quill'
 import '@vueup/vue-quill/dist/vue-quill.snow.css';
 import {payloadGame} from "@/interfaces/game.interface";
 
-const props = defineProps<{ closePopup: Function, gameDetail: any }>();
+const props = defineProps<{ closePopup: Function, gameDetail: any, getListGame: Function }>();
 const {closePopup} = toRefs(props);
 const {gameDetail} = toRefs(props);
+const {getListGame} = toRefs(props);
 const arrayLinks = ref([
   {type: 1, url: ''}
 ])
 const form = ref();
+const images = ref<any>([])
 let gameImage: any = ref('');
 let file: any;
 let params = reactive({
@@ -187,7 +189,13 @@ const createImage = async (e: Event) => {
   formData.append('file', files[0]);
   const response = await GameRepository.uploadImage(formData);
   if ('data' in response) {
-    gameImage.value = response['data']?.Location;
+    console.log("data:", response)
+    for (const img of response.data) {
+      const size = img.Bucket.split("-")[1];
+      const uri = img.Location;
+      images.value.push({type: 1, size, uri})
+    }
+    params.image = response.data[0]?.Location;
   }
 }
 const cancelAction = () => {
@@ -198,18 +206,20 @@ const storeGame = async () => {
   const payload: payloadGame = {
     name: params.name,
     tags: params.gameTag,
-    image: gameImage.value,
+    images: images.value,
     description: params.description,
     content: params.content,
     categories: params.gameCategory,
     links: arrayLinks.value,
   }
+
   const response = await GameRepository.create(payload);
   if (response.data) {
     Swal.fire({
       icon: 'success',
       title: 'Done!',
     })
+    getListGame.value();
   } else {
     Swal.fire({
       icon: 'warning',

@@ -59,5 +59,10 @@ export const LINK_TYPE = [
   {id: 2, name: "Fshare"},
   {id: 3, name: "Việt hóa"},
 ]
+export const type = {
+  1: "Google",
+  2: "Fshare",
+  3: "Việt hóa"
+}
 
 

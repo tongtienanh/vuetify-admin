@@ -1,6 +1,6 @@
 export interface payloadGame {
   name: string,
-  image: string,
+  images: any,
   description: string,
   content: string,
   tags: number[]
