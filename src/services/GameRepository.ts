@@ -21,5 +21,8 @@ export default {
       params,
       headers: TokenService.getHeader(),
     })
-  }
+  },
+  async update(payload: payloadGame, gameId: number | null) {
+    return await Repository.put(`api/game/${gameId}`, payload);
+  },
 }

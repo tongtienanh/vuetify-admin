@@ -1,4 +1,6 @@
 export interface payloadGame {
+
+  gameId?: number | null;
   name: string,
   images: any,
   description: string,

@@ -174,6 +174,7 @@ let params = reactive({
   content: '',
   gameCategory: [],
   image: '',
+  id: null,
 })
 onMounted(() => {
   if (gameDetail.value) {
@@ -203,6 +204,7 @@ const cancelAction = () => {
 }
 const storeGame = async () => {
   await form.value.validate();
+  let response;
   const payload: payloadGame = {
     name: params.name,
     tags: params.gameTag,
@@ -211,9 +213,12 @@ const storeGame = async () => {
     content: params.content,
     categories: params.gameCategory,
     links: arrayLinks.value,
+    gameId: params.id
   }
-
-  const response = await GameRepository.create(payload);
+  if (gameDetail. value) {
+    response = await GameRepository.update(payload, params.id);
+  }
+  response = await GameRepository.create(payload);
   if (response.data) {
     Swal.fire({
       icon: 'success',
